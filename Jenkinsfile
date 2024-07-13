@@ -26,7 +26,7 @@ pipeline {
                 sh """
                 npm install
                 ls -ltr
-                echo "Application version: ${env.APP_VERSION}"
+                echo "Application version:  $appVersion"
                 """
             }
         }
@@ -38,29 +38,28 @@ pipeline {
                 """
             }
         }
-    }
-
-        stage('Nexus Artifact Upload'){
-            steps{
-                script{
+        stage('Nexus Artifact Upload') {
+            steps {
+                script {
                     nexusArtifactUploader(
                         nexusVersion: 'nexus3',
                         protocol: 'http',
                         nexusUrl: "${nexusUrl}",
                         groupId: 'com.expense',
-                        version: "${appVersion}",
+                        version: "${env.APP_VERSION}",
                         repository: "backend",
                         credentialsId: 'nexus-auth',
                         artifacts: [
                             [artifactId: "backend" ,
                             classifier: '',
-                            file: "backend-" + "${appVersion}" + '.zip',
+                            file: "backend-" + "${env.APP_VERSION}" + '.zip',
                             type: 'zip']
                         ]
                     )
                 }
             }
         }
+    }
     post { 
         always { 
             echo 'I will always say Hello again!'
