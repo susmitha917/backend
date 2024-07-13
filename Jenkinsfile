@@ -59,15 +59,14 @@ pipeline {
                 }
             }
         }
-    }
-        stage('Deploy'){
-            when{
-                expression{
+        stage('Deploy') {
+            when {
+                expression {
                     params.deploy
                 }
             }
-            steps{
-                script{
+            steps {
+                script {
                     def params = [
                         string(name: 'appVersion', value: "${appVersion}")
                     ]
@@ -88,4 +87,4 @@ pipeline {
             echo 'I will run when pipeline fails'
         }
     }
-
+}
