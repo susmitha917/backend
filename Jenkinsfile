@@ -17,7 +17,7 @@ pipeline {
                 script {
                     def packageJson = readJSON file: 'package.json'
                     env.APP_VERSION = packageJson.version
-                    echo "Application version:  ${env.APP_VERSION}"
+                    echo "Application version:  ${appVersion}"
                 }
             }
         }
@@ -26,14 +26,14 @@ pipeline {
                 sh """
                 npm install
                 ls -ltr
-                echo "Application version:  ${env.APP_VERSION}"
+                echo "Application version:  ${appVersion}"
                 """
             }
         }
         stage('Build') {
             steps {
                 sh """
-                zip -q -r backend-${env.APP_VERSION}.zip * -x Jenkinsfile -x backend-${env.APP_VERSION}.zip
+                zip -q -r backend-${appVersion}.zip * -x Jenkinsfile -x backend-${appVersion}.zip
                 ls -ltr
                 """
             }
@@ -46,13 +46,13 @@ pipeline {
                         protocol: 'http',
                         nexusUrl: "${nexusUrl}",
                         groupId: 'com.expense',
-                        version: "${env.APP_VERSION}",
+                        version: "${appVersion}",
                         repository: "backend",
                         credentialsId: 'nexus-auth',
                         artifacts: [
                             [artifactId: "backend" ,
                             classifier: '',
-                            file: "backend-" + "${env.APP_VERSION}" + '.zip',
+                            file: "backend-" + "${appVersion}" + '.zip',
                             type: 'zip']
                         ]
                     )
