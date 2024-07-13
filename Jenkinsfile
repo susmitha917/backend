@@ -8,7 +8,7 @@ pipeline {
         ansiColor('xterm')
     }
     environment {
-        APP_VERSION = '' // Variable declaration
+        def appVersion = '' //variable declaration
         nexusUrl = 'nexus.susmitha.online:8081'
     }
     stages {
@@ -26,7 +26,7 @@ pipeline {
                 sh """
                 npm install
                 ls -ltr
-                echo "Application version:  $appVersion"
+                echo "Application version: $appVersion"
                 """
             }
         }
