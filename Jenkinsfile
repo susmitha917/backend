@@ -1,16 +1,16 @@
 @Library('jenkins-shared-library') _
 
-// create variable of map type and set the values
-
+// Create variable of map type and set the values
 def configMap = [
     type: "nodejsEKS",
     component: "backend",
     project: "expense"
 ]
 
-if( ! env.BRANCH_NAME.equalsIgnoreCase('main')){
+// Check if the BRANCH_NAME environment variable is null
+if (env.BRANCH_NAME != null && !env.BRANCH_NAME.equalsIgnoreCase('main')) {
     pipelineDecission.decidePipeline(configMap)
-}
-else{
+} else {
     echo "Proceed with CR or NON-PROD pipeline"
 }
+
