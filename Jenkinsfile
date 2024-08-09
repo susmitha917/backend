@@ -43,28 +43,28 @@ pipeline {
                 """
             }
         }
-        // stage('Docker build'){
-        //     steps{
-        //         sh """
-        //             aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${account_id}.dkr.ecr.${region}.amazonaws.com
+        stage('Docker build'){
+            steps{
+                sh """
+                    aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${account_id}.dkr.ecr.${region}.amazonaws.com
 
-        //             docker build -t ${account_id}.dkr.ecr.${region}.amazonaws.com/expense-backend:${appVersion} .
+                    docker build -t ${account_id}.dkr.ecr.${region}.amazonaws.com/expense-backend:${appVersion} .
 
-        //             docker push ${account_id}.dkr.ecr.${region}.amazonaws.com/expense-backend:${appVersion}
-        //         """
-        //     }
-        // }
+                    docker push ${account_id}.dkr.ecr.${region}.amazonaws.com/expense-backend:${appVersion}
+                """
+            }
+        }
 
-        // stage('Deploy'){
-        //     steps{
-        //         sh """
-        //             aws eks update-kubeconfig --region us-east-1 --name expense-dev
-        //             cd helm
-        //             sed -i 's/IMAGE_VERSION/${appVersion}/g' values.yaml
-        //             helm upgrade backend .
-        //         """
-        //     }
-        // }
+        stage('Deploy'){
+            steps{
+                sh """
+                    aws eks update-kubeconfig --region us-east-1 --name expense-dev
+                    cd helm
+                    sed -i 's/IMAGE_VERSION/${appVersion}/g' values.yaml
+                    helm upgrade backend .
+                """
+            }
+        }
         
         //  stage('Sonar Scan'){
         //     environment {
@@ -87,43 +87,43 @@ pipeline {
         //     }
         // } 
 
-         stage('Nexus Artifact Upload'){
-            steps{
-                script{
-                    nexusArtifactUploader(
-                        nexusVersion: 'nexus3',
-                        protocol: 'http',
-                        nexusUrl: "${nexusUrl}",
-                        groupId: 'com.expense',
-                        version: "${appVersion}",
-                        repository: "backend",
-                        credentialsId: 'nexus-auth',
-                        artifacts: [
-                            [artifactId: "backend" ,
-                            classifier: '',
-                            file: "backend-" + "${appVersion}" + '.zip',
-                            type: 'zip']
-                        ]
-                    )
-                }
-            }
-        } 
-         stage('Deploy'){
-            when{
-                expression{
-                    params.deploy
-                }
-            }
-            steps{
-                script{
-                    def params = [
-                        string(name: 'appVersion', value: "${appVersion}")
-                    ]
-                    build job: 'backend-deploy', parameters: params, wait: false
-                }
-            }
-        } 
-    }
+        //  stage('Nexus Artifact Upload'){
+        //     steps{
+        //         script{
+        //             nexusArtifactUploader(
+        //                 nexusVersion: 'nexus3',
+        //                 protocol: 'http',
+        //                 nexusUrl: "${nexusUrl}",
+        //                 groupId: 'com.expense',
+        //                 version: "${appVersion}",
+        //                 repository: "backend",
+        //                 credentialsId: 'nexus-auth',
+        //                 artifacts: [
+        //                     [artifactId: "backend" ,
+        //                     classifier: '',
+        //                     file: "backend-" + "${appVersion}" + '.zip',
+        //                     type: 'zip']
+        //                 ]
+        //             )
+        //         }
+        //     }
+        // } 
+    //      stage('Deploy'){
+    //         when{
+    //             expression{
+    //                 params.deploy
+    //             }
+    //         }
+    //         steps{
+    //             script{
+    //                 def params = [
+    //                     string(name: 'appVersion', value: "${appVersion}")
+    //                 ]
+    //                 build job: 'backend-deploy', parameters: params, wait: false
+    //             }
+    //         }
+    //     } 
+    // }
     post { 
         always { 
             echo 'I will always say Hello again!'
